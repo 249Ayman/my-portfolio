@@ -1,0 +1,485 @@
+---
+title: 'Complete Guide: Migrating from Vercel to Cloudflare Workers'
+description: 'A detailed step-by-step guide to migrating your web applications from Vercel to Cloudflare Workers, including code examples and best practices.'
+pubDate: 2024-11-25
+author: 'Ayman Idrees'
+recommend: true
+tags: ['Cloudflare', 'Vercel', 'Migration', 'Serverless', 'Deployment']
+---
+
+Recently, I migrated several applications from Vercel to Cloudflare Workers. This comprehensive guide covers everything you need to know for a successful migration, including code examples, gotchas, and optimization tips.
+
+## Why Migrate to Cloudflare Workers?
+
+### Benefits of Cloudflare Workers
+
+- **Global Edge Network**: 275+ locations worldwide
+- **Better Performance**: Sub-10ms cold starts
+- **Cost Effective**: More generous free tier and lower costs
+- **Integrated Ecosystem**: R2, KV, D1, Pages all work together
+- **No Vendor Lock-in**: Standard Web APIs
+
+### When to Consider Migration
+
+- High traffic applications needing global performance
+- Cost optimization requirements
+- Need for edge computing capabilities
+- Integration with Cloudflare's ecosystem
+
+## Pre-Migration Assessment
+
+### 1. Analyze Your Current Setup
+
+```bash
+# Check your Vercel configuration
+cat vercel.json
+
+# Review your API routes
+ls -la pages/api/
+# or
+ls -la app/api/
+```
+
+### 2. Identify Dependencies
+
+Common Vercel features to consider:
+
+- **API Routes**: Need conversion to Workers
+- **Edge Functions**: Direct equivalent in Workers
+- **Environment Variables**: Different management
+- **Database Connections**: May need adjustment
+- **File Storage**: Consider R2 migration
+
+## Step-by-Step Migration Guide
+
+### Step 1: Set Up Cloudflare Workers Environment
+
+```bash
+# Install Wrangler CLI
+npm install -g wrangler
+
+# Login to Cloudflare
+wrangler login
+
+# Create new Workers project
+wrangler init my-app-worker
+cd my-app-worker
+```
+
+### Step 2: Configure wrangler.toml
+
+```toml
+# wrangler.toml
+name = "my-app-worker"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+[env.production]
+name = "my-app-worker-prod"
+routes = [
+  { pattern = "myapp.com/*", zone_name = "myapp.com" }
+]
+
+[env.staging]
+name = "my-app-worker-staging"
+routes = [
+  { pattern = "staging.myapp.com/*", zone_name = "myapp.com" }
+]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id"
+
+# R2 Buckets
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "my-app-storage"
+```
+
+### Step 3: Convert API Routes
+
+#### Vercel API Route Example
+
+```javascript
+// pages/api/users/[id].js (Vercel)
+export default function handler(req, res) {
+  const { id } = req.query
+
+  if (req.method === 'GET') {
+    // Get user logic
+    res.status(200).json({ user: { id, name: 'John' } })
+  } else if (req.method === 'POST') {
+    // Create user logic
+    res.status(201).json({ message: 'User created' })
+  } else {
+    res.status(405).json({ error: 'Method not allowed' })
+  }
+}
+```
+
+#### Cloudflare Workers Equivalent
+
+```javascript
+// src/handlers/users.js (Workers)
+export async function handleUsers(request, env, ctx) {
+  const url = new URL(request.url)
+  const pathSegments = url.pathname.split('/')
+  const id = pathSegments[pathSegments.length - 1]
+
+  switch (request.method) {
+    case 'GET':
+      return new Response(JSON.stringify({ user: { id, name: 'John' } }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      })
+
+    case 'POST':
+      const body = await request.json()
+      // Create user logic
+      return new Response(JSON.stringify({ message: 'User created' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 201,
+      })
+
+    default:
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 405,
+      })
+  }
+}
+```
+
+### Step 4: Main Worker Entry Point
+
+```javascript
+// src/index.js
+import { handleUsers } from './handlers/users.js'
+import { handleAuth } from './handlers/auth.js'
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url)
+
+    // CORS handling
+    if (request.method === 'OPTIONS') {
+      return handleCORS()
+    }
+
+    // Route handling
+    if (url.pathname.startsWith('/api/users')) {
+      return handleUsers(request, env, ctx)
+    }
+
+    if (url.pathname.startsWith('/api/auth')) {
+      return handleAuth(request, env, ctx)
+    }
+
+    // Static file serving (if needed)
+    if (url.pathname.startsWith('/static/')) {
+      return handleStaticFiles(request, env)
+    }
+
+    // Default response
+    return new Response('Not Found', { status: 404 })
+  },
+}
+
+function handleCORS() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+```
+
+### Step 5: Environment Variables Migration
+
+#### Vercel Environment Variables
+
+```bash
+# .env.local (Vercel)
+DATABASE_URL=postgresql://...
+JWT_SECRET=your-secret
+API_KEY=your-api-key
+```
+
+#### Cloudflare Workers Secrets
+
+```bash
+# Set secrets in Workers
+wrangler secret put DATABASE_URL
+wrangler secret put JWT_SECRET
+wrangler secret put API_KEY
+
+# Or use wrangler.toml for non-sensitive vars
+[vars]
+API_VERSION = "v1"
+ENVIRONMENT = "production"
+```
+
+### Step 6: Database Integration
+
+#### Vercel with Prisma
+
+```javascript
+// Vercel approach
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+
+export default async function handler(req, res) {
+  const users = await prisma.user.findMany()
+  res.json(users)
+}
+```
+
+#### Workers with D1 or External DB
+
+```javascript
+// Workers with D1
+export async function getUsers(env) {
+  const { results } = await env.DB.prepare('SELECT * FROM users').all()
+  return results
+}
+
+// Or with external database
+export async function getUsersExternal(env) {
+  const response = await fetch(`${env.DATABASE_API}/users`, {
+    headers: {
+      Authorization: `Bearer ${env.DATABASE_TOKEN}`,
+    },
+  })
+  return response.json()
+}
+```
+
+### Step 7: Static Assets with Cloudflare Pages
+
+```bash
+# Deploy static assets to Pages
+wrangler pages project create my-app-frontend
+wrangler pages deployment create ./dist --project-name=my-app-frontend
+
+# Configure Pages Functions for dynamic routes
+# _functions/api/[[path]].js
+export async function onRequest(context) {
+  // Forward to Workers
+  const workerUrl = `https://my-app-worker.your-subdomain.workers.dev${context.request.url}`;
+  return fetch(workerUrl, context.request);
+}
+```
+
+## Advanced Migration Patterns
+
+### 1. Gradual Migration Strategy
+
+```javascript
+// Hybrid approach - gradually migrate routes
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url)
+
+    // Migrated routes
+    if (url.pathname.startsWith('/api/v2/')) {
+      return handleNewAPI(request, env, ctx)
+    }
+
+    // Fallback to Vercel for unmigrated routes
+    const vercelUrl = `https://your-app.vercel.app${url.pathname}${url.search}`
+    return fetch(vercelUrl, {
+      method: request.method,
+      headers: request.headers,
+      body: request.body,
+    })
+  },
+}
+```
+
+### 2. Caching Strategy
+
+```javascript
+// Implement caching with KV
+async function getCachedData(key, env, fetcher) {
+  // Try cache first
+  const cached = await env.CACHE.get(key)
+  if (cached) {
+    return JSON.parse(cached)
+  }
+
+  // Fetch and cache
+  const data = await fetcher()
+  await env.CACHE.put(key, JSON.stringify(data), {
+    expirationTtl: 3600, // 1 hour
+  })
+
+  return data
+}
+```
+
+### 3. Error Handling and Monitoring
+
+```javascript
+// Enhanced error handling
+export default {
+  async fetch(request, env, ctx) {
+    try {
+      return await handleRequest(request, env, ctx)
+    } catch (error) {
+      // Log to external service
+      await logError(error, request, env)
+
+      return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+  },
+}
+
+async function logError(error, request, env) {
+  const logData = {
+    error: error.message,
+    stack: error.stack,
+    url: request.url,
+    method: request.method,
+    timestamp: new Date().toISOString(),
+  }
+
+  // Send to logging service
+  await fetch(env.LOGGING_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(logData),
+  })
+}
+```
+
+## Deployment and Testing
+
+### 1. Deploy to Workers
+
+```bash
+# Deploy to staging
+wrangler deploy --env staging
+
+# Deploy to production
+wrangler deploy --env production
+
+# View logs
+wrangler tail --env production
+```
+
+### 2. Testing Strategy
+
+```javascript
+// test/worker.test.js
+import { unstable_dev } from 'wrangler'
+
+describe('Worker Tests', () => {
+  let worker
+
+  beforeAll(async () => {
+    worker = await unstable_dev('src/index.js', {
+      experimental: { disableExperimentalWarning: true },
+    })
+  })
+
+  afterAll(async () => {
+    await worker.stop()
+  })
+
+  test('GET /api/users returns users', async () => {
+    const resp = await worker.fetch('/api/users')
+    expect(resp.status).toBe(200)
+
+    const data = await resp.json()
+    expect(data).toHaveProperty('users')
+  })
+})
+```
+
+## Performance Optimization
+
+### 1. Bundle Size Optimization
+
+```javascript
+// Use dynamic imports for large dependencies
+async function handleHeavyOperation(request) {
+  const { heavyFunction } = await import('./heavy-module.js')
+  return heavyFunction(request)
+}
+```
+
+### 2. Connection Pooling
+
+```javascript
+// Reuse database connections
+let dbConnection
+
+async function getDBConnection(env) {
+  if (!dbConnection) {
+    dbConnection = new DatabaseClient(env.DATABASE_URL)
+  }
+  return dbConnection
+}
+```
+
+## Common Gotchas and Solutions
+
+### 1. Request/Response Differences
+
+```javascript
+// Vercel: req.query, req.body
+// Workers: URL params, await request.json()
+
+// Helper function for query params
+function getQueryParams(request) {
+  const url = new URL(request.url)
+  return Object.fromEntries(url.searchParams)
+}
+```
+
+### 2. File Upload Handling
+
+```javascript
+// Handle multipart form data
+async function handleFileUpload(request, env) {
+  const formData = await request.formData()
+  const file = formData.get('file')
+
+  if (file) {
+    // Upload to R2
+    await env.STORAGE.put(`uploads/${file.name}`, file.stream())
+    return new Response(JSON.stringify({ success: true }))
+  }
+
+  return new Response('No file provided', { status: 400 })
+}
+```
+
+## Post-Migration Checklist
+
+- [ ] All API routes migrated and tested
+- [ ] Environment variables configured
+- [ ] Database connections working
+- [ ] Static assets deployed to Pages
+- [ ] Custom domains configured
+- [ ] SSL certificates active
+- [ ] Monitoring and logging set up
+- [ ] Performance testing completed
+- [ ] Rollback plan prepared
+
+## Conclusion
+
+Migrating from Vercel to Cloudflare Workers requires careful planning but offers significant benefits in performance, cost, and global reach. The key is to migrate incrementally, test thoroughly, and leverage Cloudflare's integrated ecosystem.
+
+Start with non-critical routes, validate performance, and gradually migrate your entire application. The improved global performance and cost savings make the effort worthwhile.

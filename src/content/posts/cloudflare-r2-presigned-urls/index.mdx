@@ -1,0 +1,364 @@
+---
+title: 'Mastering Cloudflare R2 with Presigned URLs: A Complete Guide'
+description: 'My recent experience implementing Cloudflare R2 storage with presigned URLs for secure file uploads and downloads in web applications.'
+pubDate: 2024-11-20
+author: 'Ayman Idrees'
+recommend: true
+tags: ['Cloudflare', 'R2', 'Storage', 'Security', 'Web Development']
+---
+
+Recently, I had the opportunity to implement Cloudflare R2 storage with presigned URLs in a client project. This experience taught me valuable lessons about modern cloud storage solutions and secure file handling. Here's everything I learned.
+
+## What is Cloudflare R2?
+
+Cloudflare R2 is an S3-compatible object storage service that offers:
+
+- **Zero egress fees** - No charges for data transfer out
+- **Global performance** - Leverages Cloudflare's edge network
+- **S3 compatibility** - Works with existing S3 tools and SDKs
+- **Cost-effective** - Significantly cheaper than traditional cloud storage
+
+## Why Presigned URLs?
+
+Presigned URLs provide secure, temporary access to storage objects without exposing your credentials:
+
+- **Security**: No need to store credentials on the client
+- **Performance**: Direct uploads/downloads bypass your server
+- **Control**: Set expiration times and permissions
+- **Scalability**: Reduces server load for file operations
+
+## Setting Up Cloudflare R2
+
+### 1. Create an R2 Bucket
+
+```bash
+# Using Wrangler CLI
+npx wrangler r2 bucket create my-app-storage
+
+# Or through Cloudflare Dashboard
+# Navigate to R2 Object Storage > Create bucket
+```
+
+### 2. Configure API Tokens
+
+Create an API token with R2 permissions:
+
+```javascript
+// Environment variables
+R2_ACCOUNT_ID = your_account_id
+R2_ACCESS_KEY_ID = your_access_key
+R2_SECRET_ACCESS_KEY = your_secret_key
+R2_BUCKET_NAME = my - app - storage
+```
+
+## Implementation Guide
+
+### Backend: Generating Presigned URLs
+
+```javascript
+// utils/r2.js
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+
+const r2Client = new S3Client({
+  region: 'auto',
+  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+  },
+})
+
+// Generate upload presigned URL
+export async function generateUploadUrl(key, contentType) {
+  const command = new PutObjectCommand({
+    Bucket: process.env.R2_BUCKET_NAME,
+    Key: key,
+    ContentType: contentType,
+  })
+
+  return await getSignedUrl(r2Client, command, { expiresIn: 3600 }) // 1 hour
+}
+
+// Generate download presigned URL
+export async function generateDownloadUrl(key) {
+  const command = new GetObjectCommand({
+    Bucket: process.env.R2_BUCKET_NAME,
+    Key: key,
+  })
+
+  return await getSignedUrl(r2Client, command, { expiresIn: 3600 })
+}
+```
+
+### API Route Example (Next.js)
+
+```javascript
+// pages/api/upload-url.js
+import { generateUploadUrl } from '../../utils/r2'
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  try {
+    const { fileName, contentType } = req.body
+
+    // Generate unique key
+    const key = `uploads/${Date.now()}-${fileName}`
+
+    // Get presigned URL
+    const uploadUrl = await generateUploadUrl(key, contentType)
+
+    res.status(200).json({
+      uploadUrl,
+      key,
+      publicUrl: `https://your-domain.com/${key}`,
+    })
+  } catch (error) {
+    console.error('Error generating upload URL:', error)
+    res.status(500).json({ error: 'Failed to generate upload URL' })
+  }
+}
+```
+
+### Frontend: File Upload Component
+
+```jsx
+// components/FileUpload.jsx
+import { useState } from 'react'
+
+export default function FileUpload() {
+  const [uploading, setUploading] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState(null)
+
+  const handleFileUpload = async (file) => {
+    setUploading(true)
+
+    try {
+      // Get presigned URL from your API
+      const response = await fetch('/api/upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+        }),
+      })
+
+      const { uploadUrl, key, publicUrl } = await response.json()
+
+      // Upload directly to R2
+      await fetch(uploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      })
+
+      setUploadedFile({ key, publicUrl })
+    } catch (error) {
+      console.error('Upload failed:', error)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div>
+      <input type="file" onChange={(e) => handleFileUpload(e.target.files[0])} disabled={uploading} />
+      {uploading && <p>Uploading...</p>}
+      {uploadedFile && (
+        <p>
+          File uploaded: <a href={uploadedFile.publicUrl}>View</a>
+        </p>
+      )}
+    </div>
+  )
+}
+```
+
+## Advanced Features
+
+### Custom Domain Setup
+
+```javascript
+// Configure custom domain for R2 bucket
+// In Cloudflare Dashboard: R2 > Your Bucket > Settings > Custom Domains
+
+const publicUrl = `https://cdn.yourdomain.com/${key}`
+```
+
+### Image Transformations
+
+```javascript
+// Using Cloudflare Images with R2
+const transformedUrl = `https://imagedelivery.net/your-account-hash/${key}/public`
+```
+
+## Best Practices
+
+### 1. Security Considerations
+
+```javascript
+// Validate file types
+const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf']
+if (!allowedTypes.includes(file.type)) {
+  throw new Error('File type not allowed')
+}
+
+// Limit file size
+const maxSize = 10 * 1024 * 1024 // 10MB
+if (file.size > maxSize) {
+  throw new Error('File too large')
+}
+```
+
+### 2. Error Handling
+
+```javascript
+// Robust error handling
+try {
+  const uploadUrl = await generateUploadUrl(key, contentType)
+  return uploadUrl
+} catch (error) {
+  if (error.name === 'CredentialsError') {
+    throw new Error('Invalid R2 credentials')
+  }
+  throw new Error('Failed to generate upload URL')
+}
+```
+
+### 3. Progress Tracking
+
+```javascript
+// Track upload progress
+const uploadWithProgress = async (file, uploadUrl, onProgress) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        const progress = (e.loaded / e.total) * 100
+        onProgress(progress)
+      }
+    })
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        resolve()
+      } else {
+        reject(new Error('Upload failed'))
+      }
+    })
+
+    xhr.open('PUT', uploadUrl)
+    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.send(file)
+  })
+}
+```
+
+## Performance Tips
+
+1. **Use appropriate expiration times** - Balance security with user experience
+2. **Implement retry logic** - Handle network failures gracefully
+3. **Compress images** - Reduce upload times and storage costs
+4. **Use multipart uploads** - For large files (>100MB)
+
+## Cost Comparison
+
+Based on my experience:
+
+- **R2**: $0.015/GB/month storage, $0 egress
+- **S3**: $0.023/GB/month storage, $0.09/GB egress
+- **Savings**: ~60% cost reduction for typical web applications
+
+## Real-World Use Cases
+
+### 1. User Avatar Uploads
+
+```javascript
+// Generate avatar upload URL with size limits
+export async function generateAvatarUploadUrl(userId) {
+  const key = `avatars/${userId}/${Date.now()}.jpg`
+  return await generateUploadUrl(key, 'image/jpeg')
+}
+```
+
+### 2. Document Management
+
+```javascript
+// Secure document access with time-limited URLs
+export async function getDocumentUrl(documentId, userId) {
+  // Verify user has access to document
+  const hasAccess = await checkDocumentAccess(documentId, userId)
+  if (!hasAccess) {
+    throw new Error('Access denied')
+  }
+
+  return await generateDownloadUrl(`documents/${documentId}.pdf`)
+}
+```
+
+### 3. Batch File Operations
+
+```javascript
+// Generate multiple upload URLs for batch operations
+export async function generateBatchUploadUrls(files) {
+  const uploadPromises = files.map(async (file) => {
+    const key = `batch/${Date.now()}-${file.name}`
+    const uploadUrl = await generateUploadUrl(key, file.type)
+    return { key, uploadUrl, fileName: file.name }
+  })
+
+  return await Promise.all(uploadPromises)
+}
+```
+
+## Troubleshooting Common Issues
+
+### CORS Configuration
+
+```javascript
+// Ensure proper CORS headers for browser uploads
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'PUT, POST, GET, DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+```
+
+### URL Expiration Handling
+
+```javascript
+// Client-side URL refresh logic
+async function uploadWithRetry(file, uploadUrl) {
+  try {
+    await uploadFile(file, uploadUrl)
+  } catch (error) {
+    if (error.status === 403) {
+      // URL expired, get new one
+      const newUrl = await getNewUploadUrl(file)
+      await uploadFile(file, newUrl)
+    } else {
+      throw error
+    }
+  }
+}
+```
+
+## Conclusion
+
+Cloudflare R2 with presigned URLs offers a powerful, cost-effective solution for modern web applications. The S3 compatibility makes migration straightforward, while the zero egress fees provide significant cost savings.
+
+Key benefits from my experience:
+
+- **60% cost reduction** compared to traditional cloud storage
+- **Improved performance** with global edge network
+- **Enhanced security** with temporary, scoped access
+- **Simplified architecture** with direct client uploads
+
+The implementation is straightforward, and the performance benefits are immediate. I highly recommend considering R2 for your next project's storage needs.

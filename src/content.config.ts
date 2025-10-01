@@ -43,7 +43,7 @@ const projects = defineCollection({
       githubUrl: z.string(),
       website: z.string(),
       type: z.string(),
-      icon: image().optional(),
+      icon: z.union([image(), z.string()]).optional(),
       imageClass: z.string().optional(),
       star: z.number(),
       fork: z.number(),

@@ -13,17 +13,21 @@ import type {
 
 //--- Readme Page Config ---
 export const SITE: Site = {
-  title: 'Litos',
+  title: 'Ayman Idrees',
   description:
-    'Litos is a modern blogging theme built on Astro.js, designed for developers. It supports multiple post layouts, photo displays, project displays, and more, providing an elegant user experience and powerful customization capabilities.',
-  website: 'https://litos.vercel.app/',
+    'Fullstack Developer with 3+ years of experience building responsive, high-performance web applications. Skilled in React, Next.js, Astro, TypeScript, and modern web technologies. Currently expanding into mobile development.',
+  website: 'https://249ayman.com/',
   lang: 'en',
   base: '/',
-  author: 'Dnzzk2',
+  author: 'Ayman Idrees',
   ogImage: '/og-image.webp',
 }
 
 export const HEADER_LINKS: Link[] = [
+  {
+    name: 'About',
+    url: '/about',
+  },
   {
     name: 'Posts',
     url: '/posts',
@@ -40,8 +44,12 @@ export const HEADER_LINKS: Link[] = [
 
 export const FOOTER_LINKS: Link[] = [
   {
-    name: 'Readme',
+    name: 'Home',
     url: '/',
+  },
+  {
+    name: 'About',
+    url: '/about',
   },
   {
     name: 'Posts',
@@ -64,21 +72,25 @@ export const FOOTER_LINKS: Link[] = [
 // get icon https://icon-sets.iconify.design/
 export const SOCIAL_LINKS: SocialLink[] = [
   {
+    name: 'email',
+    url: 'mailto:dev@249ayman.com',
+    icon: 'icon-[mdi--email]',
+  },
+  {
     name: 'github',
-    url: 'https://github.com/yourname',
+    url: 'https://github.com/249ayman',
     icon: 'icon-[ri--github-fill]',
-    count: 11,
   },
   {
     name: 'twitter',
-    url: 'https://x.com/yourname',
+    url: 'https://x.com/aymanedris5',
     icon: 'icon-[ri--twitter-x-fill]',
   },
   {
-    name: 'bilibili',
-    url: 'https://space.bilibili.com/yourSpaceId',
-    icon: 'icon-[ri--bilibili-fill]',
-  },
+    name: 'linkedin',
+    url: 'https://linkedin.com/in/ayman-idrees/',
+    icon: 'icon-[mdi--linkedin]',
+  }
 ]
 
 /**
@@ -98,34 +110,30 @@ export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
       direction: 'left',
       skills: [
         {
-          name: 'JavaScript',
-          icon: 'icon-[mdi--language-javascript]',
+          name: 'HTML',
+          icon: 'icon-[mdi--language-html5]',
         },
         {
           name: 'CSS',
           icon: 'icon-[mdi--language-css3]',
         },
         {
-          name: 'HTML',
-          icon: 'icon-[mdi--language-html5]',
+          name: 'JavaScript',
+          icon: 'icon-[mdi--language-javascript]',
         },
         {
           name: 'TypeScript',
           icon: 'icon-[mdi--language-typescript]',
+        },
+        {
+          name: 'Sass',
+          icon: 'icon-[mdi--sass]',
         },
       ],
     },
     {
       direction: 'right',
       skills: [
-        {
-          name: 'Astro',
-          icon: 'icon-[lineicons--astro]',
-        },
-        {
-          name: 'Node.js',
-          icon: 'icon-[mdi--nodejs]',
-        },
         {
           name: 'React',
           icon: 'icon-[mdi--react]',
@@ -135,12 +143,20 @@ export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
           icon: 'icon-[devicon--nextjs]',
         },
         {
-          name: 'Tailwind CSS',
-          icon: 'icon-[mdi--tailwind]',
+          name: 'Astro',
+          icon: 'icon-[lineicons--astro]',
         },
         {
-          name: 'Iconify',
-          icon: 'icon-[line-md--iconify2-static]',
+          name: 'Redux',
+          icon: 'icon-[logos--redux]',
+        },
+        {
+          name: 'Zustand',
+          icon: 'icon-[mdi--state-machine]',
+        },
+        {
+          name: 'Jest',
+          icon: 'icon-[mdi--test-tube]',
         },
       ],
     },
@@ -148,20 +164,49 @@ export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
       direction: 'left',
       skills: [
         {
-          name: 'Ubuntu',
-          icon: 'icon-[mdi--ubuntu]',
+          name: 'Drizzle ORM',
+          icon: 'icon-[mdi--database]',
         },
         {
           name: 'Git',
           icon: 'icon-[mdi--git]',
         },
         {
-          name: 'MongoDB',
-          icon: 'icon-[lineicons--mongodb]',
-        },
-        {
           name: 'Vercel',
           icon: 'icon-[lineicons--vercel]',
+        },
+        {
+          name: 'Cloudflare',
+          icon: 'icon-[mdi--cloud]',
+        },
+        {
+          name: 'jQuery',
+          icon: 'icon-[mdi--jquery]',
+        },
+      ],
+    },
+    {
+      direction: 'right',
+      skills: [
+        {
+          name: 'Node.js',
+          icon: 'icon-[mdi--nodejs]',
+        },
+        {
+          name: 'Express.js',
+          icon: 'icon-[mdi--server]',
+        },
+        {
+          name: 'MongoDB',
+          icon: 'icon-[mdi--database-outline]',
+        },
+        {
+          name: 'PostgreSQL',
+          icon: 'icon-[mdi--database]',
+        },
+        {
+          name: 'React Native',
+          icon: 'icon-[mdi--react]',
         },
       ],
     },
@@ -178,16 +223,16 @@ export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
 
 export const GITHUB_CONFIG: GithubConfig = {
   ENABLED: true,
-  GITHUB_USERNAME: 'Dnzzk2',
+  GITHUB_USERNAME: '249ayman',
   TOOLTIP_ENABLED: true,
 }
 
 //--- Posts Page Config ---
 export const POSTS_CONFIG: PostConfig = {
   title: 'Posts',
-  description: 'Posts by Dnzzk2',
-  introduce: 'Here, I will share the usage instructions for this theme to help you quickly use it.',
-  author: 'Dnzzk2',
+  description: 'Posts by Ayman Idrees',
+  introduce: 'Here, I share insights about fullstack development, web technologies, mobile development, and my journey as a developer.',
+  author: 'Ayman Idrees',
   homePageConfig: {
     size: 5,
     type: 'compact',
@@ -222,114 +267,36 @@ export const TAGS_CONFIG: TagsConfig = {
 
 export const PROJECTS_CONFIG: ProjectConfig = {
   title: 'Projects',
-  description: 'The examples of my projects.',
-  introduce: 'The examples of my projects.',
+  description: 'A showcase of my fullstack development projects and contributions.',
+  introduce: 'Here are some of the projects I\'ve worked on, showcasing my skills in React, Next.js, Astro, backend technologies, and modern web development.',
 }
 
 export const PHOTOS_CONFIG: PhotosConfig = {
   title: 'Photos',
-  description: 'Here I will record some photos taken in daily life.',
-  introduce: 'Here I will record some photos taken in daily life.',
+  description: 'A collection of moments from my life and travels.',
+  introduce: 'Here I share photos from my daily life, travels, and experiences across different places.',
 }
 
 export const PhotosList: PhotoData[] = [
-  {
-    title: "Friend's Adorable Cat",
-    icon: {
-      type: 'emoji',
-      value: '🌠',
-    },
-    description: 'So kawaii (*^ω^*)',
-    date: '2025-06-21',
-    travel: '',
-    photos: [
-      {
-        src: '/photos/cat1.webp',
-        alt: "Friend's Adorable Cat",
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/cat2.webp',
-        alt: "Friend's Adorable Cat",
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/cat3.webp',
-        alt: "Friend's Adorable Cat",
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/cat4.webp',
-        alt: "Friend's Adorable Cat",
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-    ],
-  },
-  {
-    title: 'Ningbo · Dongqian Lake',
-    icon: {
-      type: 'emoji',
-      value: '🌅',
-    },
-    description: 'Cycling around Dongqian Lake. Although I got leg cramps a few times, the scenery was beautiful.',
-    date: '2025-03-01',
-    travel: '',
-    photos: [
-      {
-        src: '/photos/dqh1.webp',
-        alt: 'Ningbo · Dongqian Lake',
-        width: 1080,
-        height: 1358,
-        variant: '4x5',
-      },
-      {
-        src: '/photos/dqh2.jpg',
-        alt: 'Ningbo · Dongqian Lake',
-        width: 1080,
-        height: 1080,
-        variant: '1x1',
-      },
-      {
-        src: '/photos/dqh3.jpg',
-        alt: 'Ningbo · Dongqian Lake',
-        width: 1440,
-        height: 1080,
-        variant: '4x3',
-      },
-    ],
-  },
-  {
-    title: 'Ningbo · Zhoushan',
-    icon: {
-      type: 'emoji',
-      value: '🌉',
-    },
-    description: '',
-    date: '2024-09-07',
-    travel: '',
-    photos: [
-      {
-        src: '/photos/zs1.webp',
-        alt: 'Ningbo · Zhoushan',
-        width: 1210,
-        height: 908,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/zs2.webp',
-        alt: 'Ningbo · Zhoushan',
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-    ],
-  },
+  // Add your photos here
+  // Example:
+  // {
+  //   title: 'Your Photo Title',
+  //   icon: {
+  //     type: 'emoji',
+  //     value: '📸',
+  //   },
+  //   description: 'Your photo description',
+  //   date: '2024-01-01',
+  //   travel: '',
+  //   photos: [
+  //     {
+  //       src: '/photos/your-photo.jpg',
+  //       alt: 'Your Photo Alt Text',
+  //       width: 1080,
+  //       height: 810,
+  //       variant: '4x3',
+  //     },
+  //   ],
+  // },
 ]
