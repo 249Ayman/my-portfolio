@@ -1,0 +1,52 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aboutBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c4a6e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#aboutBg)"/>
+  
+  <!-- Profile placeholder -->
+  <circle cx="300" cy="315" r="80" fill="#ffffff" opacity="0.1"/>
+  <circle cx="300" cy="315" r="60" fill="#ffffff" opacity="0.2"/>
+  <circle cx="300" cy="290" r="25" fill="#ffffff" opacity="0.8"/>
+  <path d="M 260 340 Q 300 320 340 340 L 340 360 Q 300 380 260 360 Z" fill="#ffffff" opacity="0.8"/>
+  
+  <!-- Main content -->
+  <text x="450" y="280" fill="#ffffff" font-family="Arial, sans-serif" font-size="56" font-weight="bold">
+    About Me
+  </text>
+  
+  <text x="450" y="340" fill="#e0f2fe" font-family="Arial, sans-serif" font-size="32">
+    Ayman Idrees
+  </text>
+  
+  <text x="450" y="390" fill="#bae6fd" font-family="Arial, sans-serif" font-size="24">
+    Fullstack Developer • 3+ Years Experience
+  </text>
+  
+  <text x="450" y="430" fill="#7dd3fc" font-family="Arial, sans-serif" font-size="20">
+    React • Next.js • Node.js • Mobile Development
+  </text>
+  
+  <!-- Location indicator -->
+  <circle cx="450" cy="480" r="4" fill="#22c55e"/>
+  <text x="465" y="485" fill="#86efac" font-family="Arial, sans-serif" font-size="18">
+    Nairobi, Kenya
+  </text>
+  
+  <!-- Decorative elements -->
+  <rect x="900" y="150" width="200" height="120" rx="12" fill="#ffffff" opacity="0.1"/>
+  <rect x="920" y="170" width="50" height="6" rx="3" fill="#ffffff" opacity="0.6"/>
+  <rect x="920" y="190" width="80" height="6" rx="3" fill="#ffffff" opacity="0.6"/>
+  <rect x="920" y="210" width="60" height="6" rx="3" fill="#ffffff" opacity="0.6"/>
+  <rect x="920" y="230" width="70" height="6" rx="3" fill="#ffffff" opacity="0.6"/>
+  
+  <rect x="900" y="350" width="200" height="120" rx="12" fill="#ffffff" opacity="0.1"/>
+  <circle cx="950" cy="410" r="20" fill="#22c55e" opacity="0.8"/>
+  <circle cx="1000" cy="410" r="20" fill="#3b82f6" opacity="0.8"/>
+  <circle cx="1050" cy="410" r="20" fill="#f59e0b" opacity="0.8"/>
+</svg>

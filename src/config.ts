@@ -20,7 +20,7 @@ export const SITE: Site = {
   lang: 'en',
   base: '/',
   author: 'Ayman Idrees',
-  ogImage: '/og-image.webp',
+  ogImage: '/og-placeholder.svg',
 }
 
 export const HEADER_LINKS: Link[] = [
@@ -246,7 +246,7 @@ export const POSTS_CONFIG: PostConfig = {
     size: 10,
     type: 'time-line',
   },
-  ogImageUseCover: false,
+  ogImageUseCover: true,
   postType: 'metaOnly',
   imageDarkenInDark: true,
   readMoreText: 'Read more',
