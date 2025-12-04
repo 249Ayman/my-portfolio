@@ -1,0 +1,103 @@
+---
+title: 'Urgent: React Hit with Critical RCE (CVSS 10.0) - Upgrade Now!'
+description: 'React Server Components just got hit with a massive RCE vulnerability. Here is the lowdown on CVE-2025-55182 and how to fix your app immediately.'
+pubDate: 2025-12-04
+author: 'Gemini'
+recommend: true
+cover: assets/cover.svg
+tags: ['Security', 'React', 'RCE', 'Next.js', 'Web Development']
+---
+
+Stop what you are doing. Seriously, put down the coffee, pause the Spotify playlist, and listen up. React just got hit with a critical Remote Code Execution (RCE) vulnerability, and it's a big one—rated **CVSS 10.0**.
+
+If you are running React Server Components (RSC), specifically with frameworks like Next.js or React Router, you need to patch this **right now**.
+
+## The Panic Button (CVE-2025-55182)
+
+On December 3rd, 2025, the React team disclosed **CVE-2025-55182**.
+
+In simple terms: An unauthenticated attacker can send a malicious HTTP request to your React Server Function endpoints. Because of a flaw in how React decodes these payloads, that request can trick your server into executing arbitrary code.
+
+Yes, that means an attacker could potentially take full control of your server without even logging in.
+
+### Who is Vulnerable?
+
+You are likely at risk if you use **React Server Components** in versions:
+
+- `19.0`
+- `19.1.0`, `19.1.1`
+- `19.2.0`
+
+This impacts the underlying packages:
+
+- `react-server-dom-webpack`
+- `react-server-dom-parcel`
+- `react-server-dom-turbopack`
+
+Consequently, popular frameworks are affected, including:
+
+- **Next.js** (Versions 15 through 16)
+- **React Router**
+- **Waku**
+- **RedwoodJS**
+
+> **Note:** If your app is purely client-side (SPA) and doesn't use a server or RSC-supporting bundler, you are safe. But if you aren't sure, check your `package.json`.
+
+## The Fix: Upgrade Immediately
+
+The React team and framework maintainers have already pushed fixes. You need to upgrade your dependencies to the patched versions: `19.0.1`, `19.1.2`, or `19.2.1`.
+
+Here is how to fix it based on your framework:
+
+### Next.js Users
+
+Run the update for your specific version line:
+
+```bash
+# For Next.js 15.0.x
+npm install next@15.0.5
+
+# For Next.js 15.1.x
+npm install next@15.1.9
+
+# For Next.js 15.2.x
+npm install next@15.2.6
+
+# For Next.js 16.0.x
+npm install next@16.0.7
+```
+
+## React Router Users
+
+If you are using unstable RSC APIs, update your core React dependencies:
+
+```bash
+npm install react@latest react-dom@latest react-server-dom-webpack@latest
+```
+
+## Waku & Others
+
+Generally, nuke your node_modules and grab the latest stable release of your framework and React:
+
+```bash
+npm install react@latest react-dom@latest
+```
+
+## Extra Protection (Cloudflare WAF)
+
+If you are behind Cloudflare, you might have some breathing room. Cloudflare has already deployed WAF rules to block these malicious requests for all customers (Free and Paid).
+
+- Rule ID: 33aa8a8a948b48b28d40450c5fb92fba (Managed Ruleset)
+- Rule ID: 2b5d06e34a814a889bee9a0699702280 (Free Ruleset)
+
+However, do not rely solely on the WAF. It's a safety net, not a cure. Patch your code.
+
+## Summary
+
+1. Check your versions.
+
+2. Run npm install to get the latest patches.
+
+3. Deploy immediately.
+
+Security incidents like this are scary, but the fix is straightforward. Go patch your stuff!
