@@ -273,35 +273,36 @@ export const PROJECTS_CONFIG: ProjectConfig = {
 
 export const PHOTOS_CONFIG: PhotosConfig = {
   title: 'Photos',
-  description: 'A collection of moments from my life and travels.',
-  introduce: 'Here I share photos from my daily life, travels, and experiences across different places.',
+  description: 'Snapshots I actually like enough to keep.',
+  introduce:
+    'Random days out, campus stuff, trips when I remember to open the camera app. Nothing curated—just places I was.',
 }
 
 export const PhotosList: PhotoData[] = [
   {
-    title: 'Late summer light',
+    title: 'September phone dumps',
     icon: { type: 'emoji', value: '☀️' },
     description:
-      'High-resolution phone shots from a bright day out in early September—open sky, warm light, and the kind of details you only notice when you slow down.',
+      'Early September, nice light, I was out with my phone on full quality for some reason. Three shots from the same afternoon.',
     date: '2024-09-07',
     photos: [
       {
         src: '/photos/IMG_20240907_143818.jpg',
-        alt: 'Outdoor scene on a sunny September day, captured on a phone',
+        alt: 'First of three phone pics from a sunny day in early September',
         width: 2880,
         height: 3840,
         variant: '4x5',
       },
       {
         src: '/photos/IMG_20240907_144627-2.jpg',
-        alt: 'Another frame from the same September walk, phone camera',
+        alt: 'Second shot, same walk',
         width: 2880,
         height: 3840,
         variant: '4x5',
       },
       {
         src: '/photos/IMG_20240907_153955.jpg',
-        alt: 'Late-afternoon outdoor photograph, September',
+        alt: 'Third one before the battery complained',
         width: 2880,
         height: 3840,
         variant: '4x5',
@@ -309,14 +310,14 @@ export const PhotosList: PhotoData[] = [
     ],
   },
   {
-    title: 'Year-end pause',
+    title: 'Late December',
     icon: { type: 'emoji', value: '🌿' },
-    description: 'A quiet moment from late December—winter air and soft daylight before the new year.',
+    description: 'End of the year, I think I was just glad to be outside for a bit.',
     date: '2024-12-28',
     photos: [
       {
         src: '/photos/IMG_20241228_171452.jpg',
-        alt: 'Outdoor photograph from late December',
+        alt: 'Outside in late December',
         width: 6936,
         height: 9248,
         variant: '4x5',
@@ -324,15 +325,15 @@ export const PhotosList: PhotoData[] = [
     ],
   },
   {
-    title: 'Moon over the stairs',
+    title: 'Stairs and the moon',
     icon: { type: 'emoji', value: '🌙' },
     description:
-      'Night walk: concrete steps leading up toward a covered crossing, with a bright moon behind thin clouds and tree silhouettes.',
+      'Walked past these steps at night and the moon was doing that thing through the clouds. Took a few tries to get it not blurry.',
     date: '2025-02-12',
     photos: [
       {
         src: '/photos/IMG_20250212_203502.jpg',
-        alt: 'Nighttime view up an outdoor staircase toward a green-roofed structure, moon visible through clouds',
+        alt: 'Looking up the stairs at night; moon behind thin cloud',
         width: 4624,
         height: 3472,
         variant: '4x3',
@@ -340,15 +341,15 @@ export const PhotosList: PhotoData[] = [
     ],
   },
   {
-    title: 'Floating cabins on the water',
+    title: 'Those huts on the lake',
     icon: { type: 'emoji', value: '🛶' },
     description:
-      'Wooden huts on a calm lake under a huge blue sky—turquoise bases, small flags on the roofs, and dense green trees along the far shore.',
+      'The water was flat and the sky looked fake. Little flags on the roofs, blue trim on the bottoms—felt like a postcard.',
     date: '2025-06-08',
     photos: [
       {
         src: '/photos/20250608_150700.jpg',
-        alt: 'Floating wooden cabins with blue bases on still water, bright sky and cumulus clouds',
+        alt: 'Floating huts on the lake, big clouds',
         width: 4080,
         height: 3060,
         variant: '4x3',
@@ -356,44 +357,44 @@ export const PhotosList: PhotoData[] = [
     ],
   },
   {
-    title: 'Misty savanna morning',
+    title: 'Safari day (August)',
     icon: { type: 'emoji', value: '🦁' },
     description:
-      'A full day on safari: rolling hills in low cloud, zebra and impala in the grass, baboons on the track, and rhinos resting by a pool with a distant city on the horizon.',
+      'Whole day in the park. Grey sky most of the time but the animals did not care. Baboon in the road, zebra posing like it knew, rhinos napping with actual buildings far behind them—weird combo.',
     date: '2025-08-09',
     travel: 'Kenya',
     photos: [
       {
         src: '/photos/20250809_103810.jpg',
-        alt: 'Rolling savanna hills and valleys under heavy grey cloud, mist in the distance',
+        alt: 'Hills and mist, very grey morning',
         width: 4080,
         height: 3060,
         variant: '4x3',
       },
       {
         src: '/photos/20250809_104712.jpg',
-        alt: 'Olive baboon sitting on a reddish dirt path, bush and hills behind',
+        alt: 'Baboon sitting in the middle of the track',
         width: 4080,
         height: 3060,
         variant: '4x3',
       },
       {
         src: '/photos/20250809_110550.jpg',
-        alt: 'Zebra in tall dry grass, rolling landscape under overcast sky',
+        alt: 'Zebra in the long grass',
         width: 4080,
         height: 3060,
         variant: '4x3',
       },
       {
         src: '/photos/20250809_114410.jpg',
-        alt: 'Male impala in savanna grass, giraffe feeding on a bush in the background',
+        alt: 'Impala up close, giraffe half hidden in a bush behind',
         width: 4080,
         height: 3060,
         variant: '4x3',
       },
       {
         src: '/photos/20250809_122903.jpg',
-        alt: 'Two rhinoceroses resting by a watering hole, dry grass and distant city skyline',
+        alt: 'Two rhinos chilling; you can see the city if you zoom',
         width: 4080,
         height: 3060,
         variant: '4x3',
@@ -401,29 +402,29 @@ export const PhotosList: PhotoData[] = [
     ],
   },
   {
-    title: 'Skies, water, and a go-kart loop',
+    title: 'Pond, clouds, go-karts',
     icon: { type: 'emoji', value: '☁️' },
     description:
-      'Bright spring afternoon: a pond mirroring cumulus clouds, an outdoor go-kart track edged with red tyre barriers, and long views over grass and buildings.',
+      'Same afternoon—I walked from the pond to the track. Sky went full drama mode. The red tyres around the circuit look loud in photos.',
     date: '2026-03-21',
     photos: [
       {
         src: '/photos/20260321_144005.jpg',
-        alt: 'Calm pond reflecting blue sky and white clouds, building and trees beyond',
+        alt: 'Pond mirroring the sky',
         width: 4080,
         height: 3060,
         variant: '4x3',
       },
       {
         src: '/photos/20260321_144020.jpg',
-        alt: 'Outdoor go-kart track with red tyre walls and parked karts under a dramatic cloudy sky',
+        alt: 'Go-kart place, nobody on the track yet',
         width: 4080,
         height: 3060,
         variant: '4x3',
       },
       {
         src: '/photos/20260321_144050.jpg',
-        alt: 'Tree-framed view of water reflecting clouds, with distant low buildings',
+        alt: 'Same water again but framed by a tree on the right',
         width: 4080,
         height: 3060,
         variant: '4x3',
@@ -431,15 +432,15 @@ export const PhotosList: PhotoData[] = [
     ],
   },
   {
-    title: 'Campus under the trees',
+    title: 'KCA from under a tree',
     icon: { type: 'emoji', value: '🎓' },
     description:
-      'Looking up through branches at KCA University—white event tents, parked cars, and a bird circling in an open blue sky.',
+      'I was sitting in the shade and looked up—tents, cars, and one bird that stayed in the frame long enough.',
     date: '2026-03-26',
     photos: [
       {
         src: '/photos/20260326_124915.jpg',
-        alt: 'View through tree leaves toward blue sky, KCA University tents and buildings below',
+        alt: 'Campus and sky through leaves',
         width: 4080,
         height: 3060,
         variant: '4x3',
@@ -447,15 +448,15 @@ export const PhotosList: PhotoData[] = [
     ],
   },
   {
-    title: 'Full moon and flame-red blooms',
+    title: 'Moon + red flowers',
     icon: { type: 'emoji', value: '✨' },
     description:
-      'Night scene: a bright moon beside a tall lamp post, an African tulip tree in full red-orange flower, and a deep navy sky.',
+      'Walked out at night and the tulip tree was basically glowing. Moon on one side, ugly lamp post in the middle, still liked the shot.',
     date: '2026-03-28',
     photos: [
       {
         src: '/photos/20260328_214600.jpg',
-        alt: 'Full moon, streetlamp, and flowering tree with red-orange blossoms against dark night sky',
+        alt: 'Night: bright moon, streetlight pole, red flowers on the tree',
         width: 4080,
         height: 3060,
         variant: '4x3',
