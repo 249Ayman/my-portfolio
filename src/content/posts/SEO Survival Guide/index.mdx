@@ -1,0 +1,106 @@
+---
+title: 'The SEO Survival Guide: How to Migrate Your Stack Without Losing Your Rank'
+description: 'A detailed technical deep-dive into preserving organic traffic, managing 301 redirects, and maintaining metadata parity during a major website overhaul.'
+pubDate: 2026-01-02
+author: 'Ayman'
+recommend: true
+cover: assets/cover.svg
+tags: ['SEO', 'Next.js', 'Web Migration', 'Technical Strategy', 'Google Search Console']
+---
+
+One of the most terrifying moments for a Technical Manager is the "Go Live" button on a total site rewrite. You’ve built a faster, cleaner, better-looking application, but there is a monster lurking in the shadows: **SEO Suicide**.
+
+If you change your URL structures, mess up your headers, or forget to tell Google where your content moved, your organic traffic can plummet by 50% or more overnight. During our recent migration from a Laravel-based monolith to Next.js, we didn't just maintain our rank—we actually improved it.
+
+Here is the detailed blueprint of how we protected our SEO score.
+
+---
+
+## 1. The Pre-Migration Audit: Document Everything
+
+Before you write a single line of Next.js code, you need a "Source of Truth" for your current SEO status. You cannot fix what you haven't measured.
+
+- **Crawl the Site:** We used tools like _Screaming Frog_ to export every single live URL, H1 tag, Meta Description, and Title.
+- **Identify "Power Pages":** Use Google Search Console to find which pages drive 80% of your traffic. These are your crown jewels; they require manual verification post-launch.
+- **Benchmark Performance:** Record your current Core Web Vitals. If the new site is slower, you will lose rank regardless of how many redirects you have.
+
+---
+
+## 2. The 301 Redirect Strategy (The "Golden Rule")
+
+A 301 redirect tells search engines: _"The page that used to be here has moved permanently to this new address. Please pass all the 'link juice' to the new one."_
+
+### The URL Map
+
+We created a CSV mapping old URLs to new ones.
+
+- **Old:** `/services-and-solutions/enterprise-dev`
+- **New:** `/services/enterprise`
+
+### Implementing in Next.js
+
+Instead of managing redirects at the server level (like an `.htaccess` file in Apache), we handled them directly in `next.config.js`. This keeps the logic version-controlled and easy to test.
+
+```javascript
+// next.config.js
+module.exports = {
+  async redirects() {
+    return [
+      {
+        source: '/services-and-solutions/:slug',
+        destination: '/services/:slug',
+        permanent: true, // This triggers the 301 status code
+      },
+    ]
+  },
+}
+```
+
+---
+
+## 3. Achieving Metadata Parity
+
+Google’s index is built on consistency. If your page title changes from _"Custom Software Development in Nairobi"_ to just _"Services"_, your ranking for those keywords will vanish.
+
+In Next.js, we used the **Metadata API** to ensure every page received the exact same "Identity" as its predecessor.
+
+- **Title Tags:** Must match exactly.
+- **Meta Descriptions:** Must be preserved.
+- **H1 Tags:** Ensure there is only _one_ H1 per page and that the text remains the same.
+- **Image Alt Text:** Don't forget to migrate the `alt` tags for your images, as they contribute to Image Search rankings.
+
+---
+
+## 4. The Technical Infrastructure (The Next.js Edge)
+
+Next.js offers technical SEO advantages that a traditional Laravel/Inertia setup can struggle with, provided you configure them correctly.
+
+### Canonical Tags
+
+To prevent "Duplicate Content" penalties (especially during the period when Google might see both your old and new versions), we implemented strict **Canonical Tags**. This tells Google which URL is the authoritative version.
+
+### Sitemaps and Robots.txt
+
+We automated our sitemap generation using `next-sitemap`. This ensures that every time we update a page or add a blog post, Google is notified immediately via a fresh `sitemap.xml`.
+
+### Incremental Static Regeneration (ISR)
+
+Speed is a ranking factor. By using ISR, we serve pre-rendered HTML to Google’s crawlers. This results in a near-instant **Time to First Byte (TTFB)**, which Google rewards with better visibility.
+
+---
+
+## 5. Post-Launch: The Monitoring Phase
+
+The work isn't done when the site is live. The first 48 hours are critical.
+
+1.  **Search Console "Fetch as Google":** Manually submit your most important URLs to be re-indexed.
+2.  **Monitor 404s:** Check your logs daily for "Page Not Found" errors. These are usually missed redirects.
+3.  **Check the "Crawl Stats" Report:** Look for any sudden spikes in crawl errors.
+
+---
+
+## The Result
+
+By treating SEO as a core technical requirement rather than an afterthought, we transitioned our entire stack without a single day of traffic loss. In fact, due to the massive performance gains (LCP improving from 2.8s to 1.1s), our average position for key search terms moved up by **3 places**.
+
+**The lesson is simple:** Don't just move your code; move your authority.
