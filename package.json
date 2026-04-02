@@ -11,7 +11,8 @@
     "astro": "astro",
     "format": "prettier . --check --ignore-unknown",
     "format:write": "prettier . --write --ignore-unknown --cache",
-    "postbuild": "pagefind --site dist"
+    "postbuild": "pagefind --site dist",
+    "compress-photos": "node scripts/compress-large-photos.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.1",
