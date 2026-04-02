@@ -1,0 +1,75 @@
+---
+title: 'From Monolith to Modern: The Laravel Inertia to Next.js Migration Guide'
+description: 'How we overhauled our core web infrastructure, achieved a 60% performance boost, and preserved our SEO rankings during a total stack migration.'
+pubDate: 2026-04-02
+author: 'Ayman'
+recommend: true
+cover: assets/migration-cover.svg
+tags: ['Next.js', 'Laravel', 'React', 'SEO', 'Web Performance']
+---
+
+Modernizing a live production environment is often compared to changing the engine of a plane while it’s in mid-air. Not long ago, I led an initiative to overhaul our company’s core web infrastructure. We made the strategic decision to move away from a **Laravel + Inertia.js** setup to a modern stack powered by **Next.js, Tailwind CSS, and shadcn/ui**.
+
+This wasn't just about using "cool new tech." It was a calculated move to solve bottlenecks in SEO, performance, and developer velocity. Here is how we did it without breaking the business.
+
+## Why We Left the Monolith
+
+Laravel and Inertia.js are a fantastic combination for "classic" monolithic applications. However, as our requirements grew, we hit three main walls:
+
+1.  **SEO Friction:** While Inertia supports SSR, the setup is often more cumbersome compared to Next.js’s native handling of Static Site Generation (SSG) and Server-Side Rendering (SSR).
+2.  **Bundle Size:** Inertia often requires shipping a lot of "glue" code. Moving to a utility-first CSS approach (Tailwind) and a highly optimized component library (**shadcn/ui**) allowed us to shed significant "dead weight."
+3.  **The Edge:** We wanted to take advantage of Vercel’s Edge Network and Incremental Static Regeneration (ISR) to serve content faster than a traditional VPS could.
+
+## The Performance Gain: By the Numbers
+
+The most immediate impact was felt in our **Core Web Vitals**. By moving to Next.js, we leveraged **ISR**, which allows us to serve static pages that are updated in the background.
+
+| Metric                             | Laravel + Inertia | Next.js + Tailwind | Improvement           |
+| :--------------------------------- | :---------------- | :----------------- | :-------------------- |
+| **LCP (Largest Contentful Paint)** | 2.8s              | 1.1s               | **~60% Faster**       |
+| **FID (First Input Delay)**        | 110ms             | 25ms               | **~77% Faster**       |
+| **Initial Bundle Size**            | 450kb             | 120kb              | **Massive Reduction** |
+
+By using **shadcn/ui**, we stopped shipping entire component libraries. Since shadcn is a collection of re-usable components that you own, we only included the exact code we needed.
+
+## The Database Strategy: The "Bridge" Method
+
+Migrating the database is the most sensitive part of any rewrite. We chose to decouple the frontend first rather than doing a "big bang" migration.
+
+### 1. Schema Parity
+
+We kept the existing MySQL schema exactly as it was. This avoided complex data transformation logic and ensured the data remained the "source of truth."
+
+### 2. The API Bridge
+
+We transformed our Laravel monolith into a **Headless API** using Laravel Sanctum. This allowed the Next.js frontend to consume data immediately.
+
+### 3. Gradual Logic Migration
+
+Over time, we began moving heavy business logic from Laravel Controllers into Next.js **Server Actions** or dedicated Node.js microservices where it made sense for performance.
+
+## Protecting the SEO Score (Zero-Loss Protocol)
+
+The biggest fear in any migration is losing years of accumulated SEO ranking. We followed a strict protocol to ensure Google stayed happy:
+
+### The Redirection Map
+
+We created a comprehensive map of every existing URL. Using `next.config.js`, we implemented permanent **301 redirects** for any legacy paths that were restructured (e.g., changing `/services-list` to `/services`).
+
+### Metadata Parity
+
+We used the Next.js **Metadata API** to ensure that every `title`, `description`, and `OG tag` was identical to the previous version.
+
+### Performance as a Ranking Factor
+
+Because Google’s algorithm heavily weights page speed (Core Web Vitals), our performance gains actually resulted in a **15% increase in organic traffic** within the first two months post-migration.
+
+> **Pro Tip:** Always ensure your **Canonical Tags** are properly set in the new Next.js head to avoid duplicate content issues during the "crawling" phase.
+
+## Summary of Lessons Learned
+
+1.  **Planning Over Coding:** Mapping out the migration strategy took longer than the actual coding, but it saved us from 48 hours of potential downtime.
+2.  **Simplicity is Key:** Rebuilding with **shadcn/ui** and Tailwind CSS made our codebase modular and significantly easier for new team members to understand.
+3.  **Scalability is a Necessity:** Building with the future in mind isn't a luxury; it’s a requirement. A solid architecture today prevents massive technical debt tomorrow.
+
+The result? A platform that is faster for users, easier for developers, and ready for the next level of growth.
