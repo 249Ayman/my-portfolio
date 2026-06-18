@@ -44,5 +44,11 @@ export async function getAllTags(): Promise<Record<string, number>> {
 // 获取project
 export async function getAllProjects(): Promise<CollectionEntry<'projects'>[]> {
   const allProjects = await getCollection('projects')
-  return allProjects.filter((project) => !project.data.draft)
+  return allProjects
+    .filter((project) => !project.data.draft)
+    .sort((a, b) => {
+      if (a.id === 'resume-master') return -1
+      if (b.id === 'resume-master') return 1
+      return a.id.localeCompare(b.id)
+    })
 }
